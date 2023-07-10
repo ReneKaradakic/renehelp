@@ -14,7 +14,7 @@ prep_igraph_data <- function(data, node.var = "npi", edge.var = "hcpcs_cd",
   data <- as.data.table(data)
 
   # create cartesian product of all combinations (nr. hcpcs * nr. npis^2)
-  keep <- data[, .(aux = length(unique(npi))), .(hcpcs_cd)]
+  keep <- data[, list(aux = length(unique(npi))), list(hcpcs_cd)]
   keep<-keep[aux != 1, unique(hcpcs_cd)]
   data <- data[hcpcs_cd %in% keep & tot_revenue != 0]
   setnames(data, c(node.var, edge.var, edge.weight), c("node", "edge", "edge.weight"))
