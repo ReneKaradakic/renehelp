@@ -6,12 +6,12 @@ require(fastverse)
 
 
 # Prepare data for igraph format --------------------------
-prep_igraph_data <- function(data, node.var = "npi", edge.var = "hcpcs_cd",
+prep_igraph_data <- function(inpdata, node.var = "npi", edge.var = "hcpcs_cd",
                              edge.weight = "tot_revenue") {
   #load required packages
   pacman::p_load(data.table, tidyverse, foreach, doMC)
 
-  data <- as.data.table(data)
+  data <- as.data.table(inpdata)
   setnames(data, c(node.var, edge.var, edge.weight), c("node", "edge", "edge.weight"))
 
   # create cartesian product of all combinations (nr. hcpcs * nr. npis^2)
