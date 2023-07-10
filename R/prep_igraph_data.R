@@ -12,12 +12,12 @@ prep_igraph_data <- function(data, node.var = "npi", edge.var = "hcpcs_cd",
   pacman::p_load(data.table, tidyverse, foreach, doMC)
 
   data <- as.data.table(data)
+  setnames(data, c(node.var, edge.var, edge.weight), c("node", "edge", "edge.weight"))
 
   # create cartesian product of all combinations (nr. hcpcs * nr. npis^2)
-  keep <- data[, list(aux = length(unique(npi))), list(hcpcs_cd)]
-  keep<-keep[aux != 1, unique(hcpcs_cd)]
-  data <- data[hcpcs_cd %in% keep & tot_revenue != 0]
-  setnames(data, c(node.var, edge.var, edge.weight), c("node", "edge", "edge.weight"))
+  keep <- data[, list(aux = length(unique(node))), list(edge)]
+  keep<-keep[aux != 1, unique(edge)]
+  data <- data[edge %in% keep & tot_revenue != 0]
 
   auxdta <- foreach(x = seq_along(keep), .combine = rbind) %dopar% {
     test <- CJ(
