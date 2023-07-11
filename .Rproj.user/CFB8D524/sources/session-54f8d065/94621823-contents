@@ -1,7 +1,0 @@
-require(ggplot2)
-
-th_hb <- theme(
-  legend.title = element_blank(),
-  legend.position = "bottom",
-  legend.direction = "horizontal"
-)
