@@ -17,8 +17,8 @@ prep_igraph_data <- function(data, node.var = "npi", edge.var = "hcpcs_cd",
            c("node", "edge", "edge.weight"))
 
   # create cartesian product of all combinations (nr. hcpcs * nr. npis^2)
-  keep <- inpdta[, list(aux = length(unique(node))), list(edge)] %>%
-    .[aux != 1, unique(edge)]
+  keep<-inpdta[, list(aux=length(unique(node))), list(edge)]
+  keep<-keep[aux!=1, unique(edge)]
   inpdta <- inpdta[edge %in% keep & edge.weight != 0]
 
   auxdta <- foreach(x = seq_along(keep), .combine = rbind) %dopar% {
