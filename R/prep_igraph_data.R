@@ -6,11 +6,12 @@ require(fastverse)
 
 
 # Prepare data for igraph format --------------------------
-prep_igraph_data <- function(inpdta, node.var = "npi", edge.var = "hcpcs_cd",
+prep_igraph_data <- function(data, node.var = "npi", edge.var = "hcpcs_cd",
                              edge.weight = "tot_revenue") {
   pacman::p_load(data.table, collapse, tidyverse, foreach, doMC)
 
-  inpdta <- as.data.table(inpdta)
+  inpdta <- as.data.table(data)
+
   setnames(inpdta,
            c(node.var, edge.var, edge.weight),
            c("node", "edge", "edge.weight"))
