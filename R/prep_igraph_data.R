@@ -6,23 +6,24 @@ require(fastverse)
 
 
 # Prepare data for igraph format --------------------------
-prep_igraph_data <- function(inpdata, node.var = "npi", edge.var = "hcpcs_cd",
+prep_igraph_data <- function(inpdta, node.var = "npi", edge.var = "hcpcs_cd",
                              edge.weight = "tot_revenue") {
-  #load required packages
-  pacman::p_load(data.table, tidyverse, foreach, doMC)
+  pacman::p_load(data.table, collapse, tidyverse, foreach, doMC)
 
-  data <- as.data.table(inpdata)
-  setnames(data, c(node.var, edge.var, edge.weight), c("node", "edge", "edge.weight"))
+  inpdta <- as.data.table(inpdta)
+  setnames(inpdta,
+           c(node.var, edge.var, edge.weight),
+           c("node", "edge", "edge.weight"))
 
   # create cartesian product of all combinations (nr. hcpcs * nr. npis^2)
-  keep <- data[, list(aux = length(unique(node))), list(edge)]
-  keep<-keep[aux != 1, unique(edge)]
-  data <- data[edge %in% keep & tot_revenue != 0]
+  keep <- inpdta[, list(aux = length(unique(npi))), list(hcpcs_cd)] %>%
+    .[aux != 1, unique(hcpcs_cd)]
+  inpdta <- inpdta[hcpcs_cd %in% keep & tot_revenue != 0]
 
   auxdta <- foreach(x = seq_along(keep), .combine = rbind) %dopar% {
     test <- CJ(
-      node.x = data[edge == keep[x], node],
-      node.y = data[edge == keep[x], node]
+      node.x = inpdta[edge == keep[x], node],
+      node.y = inpdta[edge == keep[x], node]
     )
     test[, node.x := fifelse(as.integer(node.x) > as.integer(node.y), node.x, node.y)]
     test[, node.y := fifelse(as.integer(node.x) > as.integer(node.y), node.y, node.x)]
@@ -32,11 +33,11 @@ prep_igraph_data <- function(inpdata, node.var = "npi", edge.var = "hcpcs_cd",
     test
   }
 
-  auxdta <- merge(auxdta, data[, .(node, edge, edge.weight)],
+  auxdta <- merge(auxdta, inpdta[, .(node, edge, edge.weight)],
                   by.x = c("node.x", "hcpcs_cd"),
                   by.y = c("node", "edge"), all.x = TRUE
   ) %>% merge(
-    data[, .(node, edge, edge.weight)],
+    inpdta[, .(node, edge, edge.weight)],
     by.x = c("node.y", "hcpcs_cd"),
     by.y = c("node", "edge"), all.x = TRUE
   )
