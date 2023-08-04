@@ -1,0 +1,1 @@
+This repository contains a variety of helper functions which I have collected over the years. This package is meant for personal use only, but if you find it somehow useful feel free to install it. 
